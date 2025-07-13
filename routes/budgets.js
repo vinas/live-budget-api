@@ -12,7 +12,16 @@ router.get('/', async (req, res, next) => {
   await axios
     .get('/budgets')
     .then((response) => {
-      res.status(200).json(response.data);
+      const budgetAmount = response.data.length;
+      if (budgetAmount > 0) {
+        const budgetList = [];
+        for (let i = 0; i < budgetAmount; i++) {
+          budgetList.push(new Budget(response.data[i]));
+        }
+        res.status(200).json(budgetList);
+        return;
+      }
+      res.status(200).json([]);
     })
     .catch((err) => {
       res.status(400).json(err);
@@ -60,7 +69,7 @@ router.post('/', async (req, res, next) => {
 const getNextId = async (res) => {
   return await axios
     .get('/budgets?_sort=-id&_start=0&_end=1')
-    .then((response) => (response.data.length > 0) ? response.data[0].id + 1 : 1)
+    .then((response) => (response.data.length > 0) ? parseInt(response.data[0].id) + 1 : 1)
     .catch((err) => {
       res.setHeader('Content-Type', 'application/json');
       res.status(400).json(err);
