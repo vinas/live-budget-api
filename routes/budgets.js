@@ -6,11 +6,20 @@ const axios = require('axios');
 
 axios.defaults.baseURL = process.env.DB_URL;
 
-router.get('/', (req, res, next) => {
-  res.json({ endPoint: 'GET /budgets' });
+router.get('/', async (req, res, next) => {
+  res.setHeader('Content-Type', 'application/json');
+  const results = [];
+  await axios
+    .get('/budgets')
+    .then((response) => {
+      res.status(200).json(response.data);
+    })
+    .catch((err) => {
+      res.status(400).json(err);
+    });
 });
 
-router.post('/', (req, res, next) => {
+router.post('/', async (req, res, next) => {
   res.setHeader('Content-Type', 'application/json');
   const validation = budgetSchema.safeParse(req.body);
    if (!validation.success) {
@@ -19,15 +28,26 @@ router.post('/', (req, res, next) => {
     });
   }
   const budget = new Budget(validation.data);
-  axios
+  budget.id = await getNextId(res);
+  res.json(budget);
+  await axios
     .post('/budgets', budget)
     .then((response) => {
       res.status(201).end(JSON.stringify(response.data));
     })
     .catch((err) => {
-      console.log(err);
       res.status(400).end(JSON.stringify({ error: 'Unexpected error' }));
     });
 });
+
+const getNextId = async (res) => {
+  return await axios
+    .get('/budgets?_sort=-id&_start=0&_end=1')
+    .then((response) => (response.data.length > 0) ? response.data[0].id + 1 : 1)
+    .catch((err) => {
+      res.setHeader('Content-Type', 'application/json');
+      res.status(400).json(err);
+    });
+};
 
 module.exports = router;

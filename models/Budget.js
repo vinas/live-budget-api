@@ -1,16 +1,16 @@
 class Budget {
-  constructor({ name, initialAmount, endDate, startingDate }) {
-    const getLastId = () => {
-      return 0;
-    };
-
-    this.id = getLastId() + 1;
+  constructor({ id, name, initialAmount, endDate, startingDate }) {
+    this.id = this.id;
     this.name = name;
     this.startingDate = startingDate;
     this.endDate = endDate;
     this.initialAmount = initialAmount;
     this.createdAt = new Date();
   }
+
+  setId(id) {
+    this.id = id;
+  };
 }
 
 module.exports = Budget;
