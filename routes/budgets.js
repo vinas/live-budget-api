@@ -2,8 +2,9 @@ const express = require('express');
 const router = express.Router();
 const budgetSchema = require('../schemas/budget');
 const Budget = require('../models/Budget');
+const axios = require('axios');
 
-// axios.defaults.baseURL = process.env.VISY_ONE_JSON_SERVER_URL;
+axios.defaults.baseURL = process.env.DB_URL;
 
 router.get('/', (req, res, next) => {
   res.json({ endPoint: 'GET /budgets' });
@@ -18,10 +19,15 @@ router.post('/', (req, res, next) => {
     });
   }
   const budget = new Budget(validation.data);
-  res.status(201).json({
-    endPoint: 'POST /budgets/new',
-    populated: budget
-  });
+  axios
+    .post('/budgets', budget)
+    .then((response) => {
+      res.status(201).end(JSON.stringify(response.data));
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(400).end(JSON.stringify({ error: 'Unexpected error' }));
+    });
 });
 
 module.exports = router;
