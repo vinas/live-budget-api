@@ -1,4 +1,26 @@
 {
-  "budgets": [],
+  "budgets": [
+    {
+      "id": 1,
+      "name": "Kupiorock 1",
+      "startingDate": "2025-07-17",
+      "endDate": "2025-07-27",
+      "initialAmount": 500
+    },
+    {
+      "id": 2,
+      "name": "Kupiorock 2",
+      "startingDate": "2025-07-17",
+      "endDate": "2025-07-27",
+      "initialAmount": 500
+    },
+    {
+      "id": 3,
+      "name": "Kupiorock 3",
+      "startingDate": "2025-07-17",
+      "endDate": "2025-07-27",
+      "initialAmount": 500
+    }
+  ],
   "expenditures": []
 }

@@ -19,6 +19,23 @@ router.get('/', async (req, res, next) => {
     });
 });
 
+router.get('/:id', async (req, res, next) => {
+  res.setHeader('Content-Type', 'application/json');
+  if (req.params.id) {
+    await axios
+      .get(`/budgets?id=${req.params.id}`)
+      .then((response) => {
+        if (response.data.length > 0) {
+          const budget =  new Budget(response.data[0]);
+          res.status(200).json(budget);
+        }
+      })
+      .catch((err) => {
+        res.status(400).json(err);
+      });
+  }
+});
+
 router.post('/', async (req, res, next) => {
   res.setHeader('Content-Type', 'application/json');
   const validation = budgetSchema.safeParse(req.body);
