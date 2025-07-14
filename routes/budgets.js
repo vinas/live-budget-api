@@ -6,6 +6,16 @@ const axios = require('axios');
 
 axios.defaults.baseURL = process.env.DB_URL;
 
+const getNextId = async (res) => {
+  return await axios
+    .get('/budgets?_sort=-id&_start=0&_end=1')
+    .then((response) => (response.data.length > 0) ? parseInt(response.data[0].id) + 1 : 1)
+    .catch((err) => {
+      res.setHeader('Content-Type', 'application/json');
+      res.status(400).json(err);
+    });
+};
+
 router.get('/', async (req, res, next) => {
   res.setHeader('Content-Type', 'application/json');
   const results = [];
@@ -66,14 +76,18 @@ router.post('/', async (req, res, next) => {
     });
 });
 
-const getNextId = async (res) => {
-  return await axios
-    .get('/budgets?_sort=-id&_start=0&_end=1')
-    .then((response) => (response.data.length > 0) ? parseInt(response.data[0].id) + 1 : 1)
-    .catch((err) => {
-      res.setHeader('Content-Type', 'application/json');
-      res.status(400).json(err);
-    });
-};
+router.delete('/:id', async (req, res, next) => {
+  res.setHeader('Content-Type', 'application/json');
+  if (req.params.id) {
+    await axios
+      .delete(`/budgets/${req.params.id}`)
+      .then(() => {
+        res.status(200).end();
+      })
+      .catch((err) => {
+        res.status(400).json(err);
+      });
+  }
+});
 
 module.exports = router;
